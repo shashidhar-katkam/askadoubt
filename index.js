@@ -2,12 +2,37 @@
 // SPDX-License-Identifier: MIT-0
 
 const AWS = require('aws-sdk');
+var mongoose = require("mongoose");
 
+const { CONSTANTS } = require('./src/util/constants')
 const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10', region: process.env.AWS_REGION });
 
 const { TABLE_NAME } = process.env;
 
+
+
+
+
+
 exports.handler = async event => {
+
+  //let url = 'mongodb://13.232.207.226:27017/discussion_prod';
+  mongoose
+    .connect(CONSTANTS.MONGODB_CON_URL, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log('DB connected Successfully');
+    }).catch((e) => {
+
+      console.log(e)
+    });
+
+
+
   let connectionData;
 
   try {

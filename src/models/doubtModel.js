@@ -34,14 +34,18 @@ const doubtSchema = mongoose.Schema(
     isUserOnline: {
       type: Boolean
     },
-    userconnectionId: {
+    userConnectionId: {
       type: String,
-      required: [true, 'Please provide the connection ID'],
+      //  required: [true, 'Please provide the connection ID'],
     },
     teacherConnectionId: {
       type: String,
-      required: [true, 'Please provide the connection ID'],
+      //required: [false, 'Please provide the connection ID'],
     },
+    isCleared: {
+      type: Boolean,    // isFinished : true
+      default: false
+    }
   },
   { timestamps: true }
 );

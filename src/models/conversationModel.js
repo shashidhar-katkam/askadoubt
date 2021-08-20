@@ -2,12 +2,18 @@ const mongoose = require('mongoose');
 
 const conversationSchema = mongoose.Schema(
     {
+        for: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'Doubt',
+            required: [true, 'A post must be posted by someone'],
+        },
+
         type: {
             type: String,
             required: [true, 'Please provide a board Id for your post'],
         },
         content: {
-            type: String,
+            type: Object,
             required: [true, 'Please provide a class Id for your post'],
         },
         from: {
@@ -18,11 +24,15 @@ const conversationSchema = mongoose.Schema(
         to: {
             type: mongoose.Schema.ObjectId,
             ref: 'User',
-            required: [true, 'A post must be posted by someone'],
+            required: [false, 'A post must be posted by someone'],
         },
         seen: {
             type: Boolean,
             required: [true, 'Please provide a subject Id for your post'],
+        },
+        direction: {
+            type: Number,   // 1, 2
+            //required: [true, 'Please provide a subject Id for your post'],
         }
     },
     { timestamps: true }
