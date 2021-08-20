@@ -2,9 +2,10 @@ var express = require('express');
 var app = express();
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var port = process.env.PORT || 7899;
+var port = process.env.PORT || 3006;
 var mongoose = require("mongoose");
-var DoubtsController = require('./src/controllers/doubtsController');
+var doubtsController = require('./src/controllers/doubtsController');
+var conversationController = require('./src/controllers/conversationController');
 
 const { CONSTANTS, PAYLOAD } = require('./src/util/constants')
 
@@ -23,8 +24,17 @@ app.get('/:key', async (req, res) => {
         }
         case '$disconnect': {
         }
-        case 'createdoubt': {
-            results = await DoubtsController.createDoubt(PAYLOAD.CREATE_DOUBT);
+        case 'createDoubt': {
+            results = await doubtsController.createDoubt(PAYLOAD.CREATE_DOUBT);
+        }
+        case 'saveConversation': {
+            results = await conversationController.saveConversation(PAYLOAD.CONVERSATION);
+        }
+        case 'respondDoubt': {
+            results = await doubtsController.respondDoubt(PAYLOAD.RESPONDE_DOUBT);
+        }
+        case 'deleteConversation': {
+            results = await conversationController.deleteConversation(PAYLOAD.DELETE_CONVERSATION);
         }
     }
 

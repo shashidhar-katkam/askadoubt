@@ -18,7 +18,7 @@ exports.PAYLOAD = {
         groupId: "45162249-a1f2-4689-9df6-ca633875bab2",
         subjectId: "3ae11665-aa66-4eb9-94de-1dd775f6cf32",
         subjectName: "Mathematics",
-        doubt: 'What is my name ?',
+        doubt: 'What is my name rakesh ?',
         isUserOnline: true,
         userConnectionId: 'abcd',
         teacherConnectionId: null,
@@ -94,7 +94,41 @@ exports.PAYLOAD = {
                 to: this.CONSTANTS.USER_ID,
                 direction: 2,
                 seen: false
-            }
+            },
+            {
+                type: 'video',
+                content: 'e600fd60-c02c-11ea-806b-2f1f257f758f-bie-eng-11-chem-hydrocarbons-5.1_introduction.mp4',
+                from: this.CONSTANTS.BOT_ID,
+                to: this.CONSTANTS.USER_ID,
+                direction: 2,
+                seen: false
+            },
+            {
+                type: 'pdf',
+                content: 'a58536f0-d7a8-11ea-8efd-61ca1f9c97b3-cbse-11-maths-sets.pdf',
+                from: this.CONSTANTS.BOT_ID,
+                to: this.CONSTANTS.USER_ID,
+                direction: 2,
+                seen: false
+            },
+            {
+                type: 'text',
+                content: 'Wait a moment, we are connecting you a teacher',
+                from: this.CONSTANTS.BOT_ID,
+                to: this.CONSTANTS.USER_ID,
+                direction: 2,
+                seen: false
+            },
+            {
+                type: 'text',
+                content: 'This is the response from teacher',
+                from: this.CONSTANTS.TEACHER_ID,
+                to: this.CONSTANTS.USER_ID,
+                direction: 2,
+                seen: false
+            },
+
+
             // ,
             // {
             //     type: 'warning',
@@ -112,7 +146,25 @@ exports.PAYLOAD = {
             //     direction: 2,
             //     seen: false
             // }
-        ]
+        ],
+    },
+    CONVERSATION: {
+        for: '611f44f589b3c3840843a4ba',
+        type: 'text',
+        content: 'This is the response from teacher latest',
+        from: this.CONSTANTS.TEACHER_ID,
+        to: this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    RESPONDE_DOUBT: {
+        doubtId: '611f44f589b3c3840843a4ba',
+        teacherId: this.CONSTANTS.TEACHER_ID
+    },
+    DELETE_CONVERSATION: {
+        conversationId: '611f44f589b3c3840843a4c0',
+        userId: this.CONSTANTS.USER_ID,
+        teacherId: this.CONSTANTS.TEACHER_ID
     }
 }
 

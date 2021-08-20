@@ -42,9 +42,28 @@ const doubtSchema = mongoose.Schema(
       type: String,
       //required: [false, 'Please provide the connection ID'],
     },
-    isCleared: {
+    isDoubtCleared: {
       type: Boolean,    // isFinished : true
       default: false
+    },
+    isAssigned: {
+      type: Boolean,
+      default: false
+    },
+    assignedTo: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: false //[false, 'A post must be posted by someone'],
+    },
+    isReported: {
+      type: Boolean,
+      default: false
+    },
+    reportReason: {
+      type: String
+    },
+    reportedAt: {
+      type: Date
     }
   },
   { timestamps: true }
