@@ -154,7 +154,7 @@ exports.PAYLOAD = {
         content: 'This is the response from teacher latest',
         from: this.CONSTANTS.TEACHER_ID,
         to: this.CONSTANTS.USER_ID,
-        direction: 2,
+        direction: 2,  //from teacher user 
         seen: false
     },
     RESPONDE_DOUBT: {
@@ -165,6 +165,16 @@ exports.PAYLOAD = {
         conversationId: '611f44f589b3c3840843a4c0',
         userId: this.CONSTANTS.USER_ID,
         teacherId: this.CONSTANTS.TEACHER_ID
+    },
+    SAVE_CONNECTION: {
+        user: this.CONSTANTS.USER_ID,
+        connectionId: 'connectionId',
+        isOnline: true
+    },
+    UPDATE_CONNECTION: {
+        user: this.CONSTANTS.USER_ID,
+        connectionId: null,
+        isOnline: false
     }
 }
 
