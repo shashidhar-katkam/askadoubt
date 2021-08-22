@@ -7,7 +7,10 @@ const conversationSchema = mongoose.Schema(
             ref: 'Doubt',
             required: [true, 'A post must be posted by someone'],
         },
-
+        currentRequest: {  // for automation......
+            type: Number,
+            //required: [true, 'Please provide a board Id for your post'],
+        },
         type: {
             type: String,
             required: [true, 'Please provide a board Id for your post'],

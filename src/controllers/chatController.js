@@ -1,30 +1,15 @@
 const Doubt = require('./../models/doubtModel');
-const Conversation = require('./../models/conversationModel');
+const ConversationController = require('./conversationController');
+const { CONSTANTS, PAYLOAD } = require('../util/constants');
 
 const _ = require('lodash');
 
-exports.saveConversation = async (payload) => {
-    let c = await Conversation.create(payload);
-
-
-    //    if (payload.)
-
-
-    return { messsage: [c], type: 'doubt', doubtId: doubt._id };
-}
-
-
-exports.deleteConversation = async (payload) => {
-    await Conversation.findByIdAndDelete(payload.conversationId);
-    return { conversationId: payload.conversationId, type: 'deleteconversation', doubtId: doubt._id };
-}
 
 exports.chatWithBOT = async (payload) => {
-    let requestBody = req.body;
-    let handleSocketNext = false;
-    const user = JSON.parse(JSON.stringify(req.user, null, '\t'));
+
+    //  const user = JSON.parse(JSON.stringify(req.user, null, '\t'));
     try {
-        let conversations = [];
+        //  let conversations = [];
 
         if (requestBody && requestBody.length) {
             for (let i = requestBody.length - 2; i > 0; i--) {
@@ -57,6 +42,25 @@ exports.chatWithBOT = async (payload) => {
             }
         }
 
+
+    } catch (ex) {
+        console.error(ex)
+    }
+
+}
+
+exports.requestToCloseConversation = async (payload) => {
+    try {
+        await ConversationController.saveConversation(CONSTANTS.areYouHappy);
+        await ConversationController.saveConversation(CONSTANTS.rating);
+
+        let closeRequestSend = _.cloneDeep(CONSTANTS.closeRequestSend);
+        closeRequestSend.from = payload.from;
+
+        return {
+            student: { messsage: [CONSTANTS.areYouHappy, CONSTANTS.rating], type: 'doubt', doubtId: payload._id },
+            teacher: { messsage: [closeRequestSend], type: 'doubt', doubtId: payload._id },
+        }
 
     } catch (ex) {
         console.error(ex)

@@ -1,10 +1,99 @@
+const BOT_ID = "611f021feee24600094240b9";
+
+exports.CHAT_EVENTS = {
+    selectSubject: 1,
+    typeAChapter: 2,
+    rating: 3
+}
+
+exports.CHAT_MESSAGE_TYPE = {
+    text: 1,
+    typeAChapter: 2,
+    rating: 3
+}
+
 
 exports.CONSTANTS = {
     MONGODB_CON_URL: 'mongodb+srv://macademyuser:Meluha123$@macademyfreecloudmongod.hzdx8.mongodb.net/discussboarddev',
-    BOT_ID: "611f021feee24600094240b9",
+    BOT_ID: BOT_ID,
     USER_ID: '6113e8414374b5000854f861',
-    TEACHER_ID: '611f052a8c46320008c073c4'
+    TEACHER_ID: '611f052a8c46320008c073c4',
+
+
+    waitForTeacher: {
+        type: 'text',
+        content: 'Wait a moment, we are connecting you a teacher',
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    connectedToATeacher: {
+        type: 'alert',
+        content: 'Hi, We have connected you to a teacher. You will get a reply from teacher soon..',
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    areYouHappy: {
+        type: 'alert',
+        content: 'Are you happy with teachers reply ?',
+
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    rating: {
+        type: 'list',
+        content: [
+            {
+                "value": "1",
+                "key": "1"
+            },
+            {
+                "value": "2",
+                "key": "2"
+            },
+            {
+                "value": "3",
+                "key": "3"
+            },
+            {
+                "value": "4",
+                "key": "4"
+            },
+            {
+                "value": "5",
+                "key": "5"
+            },
+        ],
+        currentRequest: this.CHAT_EVENTS.rating,
+        from: BOT_ID,
+        to: null,
+        direction: 2,
+        seen: true
+    },
+    thanksForRating: {
+        type: 'text',
+        content: 'Thanks for rating please get back to us for further doubts',
+        from: BOT_ID,
+        to: null,
+        direction: 2,
+        seen: false
+    },
+    closeRequestSend: {
+        type: 'alertBlock',
+        content: 'You are sent a Request to close this Doubt.',
+        from: BOT_ID,
+        to: null,
+        direction: 1,
+        seen: false
+    },
 }
+
+
 
 
 // "_id": "611f021feee24600094240b9",
@@ -41,7 +130,20 @@ exports.PAYLOAD = {
             },
             {
                 type: 'list',
-                content: ['Physics', 'Chemistry', 'Mathmatics'],
+                content: [
+                    {
+                        "subjectName": "Mathematics",
+                        "subjectId": "3ae11665-aa66-4eb9-94de-1dd775f6cf31"
+                    },
+                    {
+                        "subjectName": "Physics",
+                        "subjectId": "c2e5a32d-8d1b-4621-b326-71c829ea8441"
+                    },
+                    {
+                        "subjectName": "Chemistry",
+                        "subjectId": "c68bbefe-f418-4bfd-a8d2-c4a658950205"
+                    }
+                ],
                 from: this.CONSTANTS.BOT_ID,
                 to: this.CONSTANTS.USER_ID,
                 direction: 2,
@@ -56,7 +158,7 @@ exports.PAYLOAD = {
                 seen: false
             },
             {
-                type: 'list',
+                type: 'text',
                 content: 'Please Type Chapter.',
                 from: this.CONSTANTS.BOT_ID,
                 to: this.CONSTANTS.USER_ID,
@@ -65,7 +167,7 @@ exports.PAYLOAD = {
             },
             {
                 type: 'text',
-                content: 'Physics',
+                content: 'eclipse',
                 from: this.CONSTANTS.USER_ID,
                 to: this.CONSTANTS.BOT_ID,
                 direction: 1,
@@ -159,12 +261,13 @@ exports.PAYLOAD = {
     },
     RESPONDE_DOUBT: {
         doubtId: '611f44f589b3c3840843a4ba',
-        teacherId: this.CONSTANTS.TEACHER_ID
+        teacher: this.CONSTANTS.TEACHER_ID,
+        user: this.CONSTANTS.USER_ID
     },
     DELETE_CONVERSATION: {
         conversationId: '611f44f589b3c3840843a4c0',
-        userId: this.CONSTANTS.USER_ID,
-        teacherId: this.CONSTANTS.TEACHER_ID
+        to: this.CONSTANTS.USER_ID,
+        from: this.CONSTANTS.TEACHER_ID
     },
     SAVE_CONNECTION: {
         user: this.CONSTANTS.USER_ID,
@@ -175,7 +278,12 @@ exports.PAYLOAD = {
         user: this.CONSTANTS.USER_ID,
         connectionId: null,
         isOnline: false
-    }
+    },
+    REQUEST_TO_CLOSE_DOUBT: {
+        doubtId: '611f44f589b3c3840843a4ba',
+        to: this.CONSTANTS.USER_ID,
+        from: this.CONSTANTS.TEACHER_ID
+    },
 }
 
 

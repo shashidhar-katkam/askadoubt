@@ -1,12 +1,16 @@
 const Doubt = require('./../models/doubtModel');
 const Conversation = require('./../models/conversationModel');
-
+const { CONSTANTS, PAYLOAD } = require('../util/constants');
 const _ = require('lodash');
 
-exports.createDoubt = async (payload) => {
+exports.createDoubt = async (payload, user) => {
     try {
         let doubtInfo = _.cloneDeep(payload);
         let conversations = doubtInfo.conversations;
+
+        let nextMessage = _.cloneDeep(CONSTANTS.waitForTeacher);
+        nextMessage.to = user;
+        conversations.push(nextMessage);
         delete doubtInfo.conversations;
 
         let doubt = await Doubt.create(doubtInfo);
@@ -14,41 +18,45 @@ exports.createDoubt = async (payload) => {
             conversations[i].for = doubt._id
             Conversation.create(conversations[i]);
         }
-        return doubt;
+
+        nextMessage.for = doubt._id;
+
+        return { messsage: [nextMessage], type: 'doubt', doubtId: doubt._id };
     } catch (e) {
         console.log(e);
     }
 }
 
 exports.respondDoubt = async (payload) => {
-
     try {
-        let record = await Doubt.findByIdAndUpdate(
+        //let record = 
+        await Doubt.findByIdAndUpdate(
             payload.doubtId,
             { isAssigned: true, assignedTo: payload.teacherId },
-            { new: true }
+            //   { new: true }
         );
 
-        return record;
+        let nextMessage = _.cloneDeep(CONSTANTS.connectedToATeacher);
+        nextMessage.to = payload.user;
 
+        return { messsage: [nextMessage], type: 'doubt', doubtId: payload.doubtId };
     } catch (e) {
         console.log(e);
     }
 }
 
-exports.respondDoubt = async (payload) => {
-    try {
-        let record = await Doubt.findByIdAndUpdate(
-            payload.doubtId,
-            { isReported: true, reportReason: 'abuse', reportedAt: new Date().getTime() },
-            { new: true }
-        );
-
-        return record;
-    } catch (e) {
-        console.log(e);
-    }
-}
+// exports.respondDoubt = async (payload) => {
+//     try {
+//         let record = await Doubt.findByIdAndUpdate(
+//             payload.doubtId,
+//             { isReported: true, reportReason: 'abuse', reportedAt: new Date().getTime() },
+//             { new: true }
+//         );
+//         return record;
+//     } catch (e) {
+//         console.log(e);
+//     }
+// }
 
 
 

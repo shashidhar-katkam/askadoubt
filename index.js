@@ -9,7 +9,7 @@ const apiController = require('./src/controllers/apiController');
 var doubtsController = require('./src/controllers/doubtsController');
 var conversationController = require('./src/controllers/conversationController');
 var connectionController = require('./src/controllers/connectionController');
-
+var chatController = require('./src/controllers/chatController');
 //const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10', region: process.env.AWS_REGION });
 
 
@@ -39,18 +39,15 @@ exports.handler = async event => {
       });
 
 
-
-
-
     if (event.requestContext) {
       const connectionId = event.requestContext.connectionId;
       const routeKey = event.requestContext.routeKey;
       const endpoint = event.requestContext.domainName + '/' + event.requestContext.stage;
-      
-      let postData;
+
+      let requestObj;
       let user;
       if (event.body) {
-        postData = JSON.parse(event.body).data;
+        requestObj = JSON.parse(event.body).data;
         user = JSON.parse(event.body).user;
       }
 
@@ -67,41 +64,72 @@ exports.handler = async event => {
           results = await connectionController.updateConnection(PAYLOAD.UPDATE_CONNECTION);
           break;
         }
+
+        // when socket opened, use will send the userId to update the connectionId in table
         case 'online': {
           PAYLOAD.SAVE_CONNECTION.connectionId = connectionId;
           results = await connectionController.saveConnection(PAYLOAD.SAVE_CONNECTION);
           break;
         }
+        // when socket closed, use will send the userId to update the connectionId in table
         case 'offline': {
           results = await connectionController.updateConnection(PAYLOAD.UPDATE_CONNECTION);
           break;
         }
+
+        // user will send the complete doubtInfo with conversation made by bot to save doubt, convesations
+        // to establish a socket connection.
         case 'createDoubt': {
-          results = await doubtsController.createDoubt(PAYLOAD.CREATE_DOUBT);
+          results = await doubtsController.createDoubt(requestObj, user);
+          await apiController.sendMessage(endpoint, connectionId, results, user);
           break;
         }
+
+        case 'respondDoubt': {
+          results = await doubtsController.respondDoubt(PAYLOAD.RESPONDE_DOUBT);
+
+          await apiController.sendMessage(endpoint, connectionId, results, user);
+          await apiController.sendMessage(endpoint, connectionId, results, PAYLOAD.RESPONDE_DOUBT.user);
+          break;
+        }
+
         case 'saveConversation': {
           results = await conversationController.saveConversation(PAYLOAD.CONVERSATION);
 
-          await apiController.sendMessage(endpoint, connectionId, postData, user);
-
-          let toUser = postData.to;
-
+          await apiController.sendMessage(endpoint, connectionId, results, user);
+          let toUser = requestObj.to;
           let toUserInfo = await connectionController.getConnectionByUser({ user: toUser });
-
           console.log(toUserInfo);
-          await apiController.sendMessage(endpoint, toUserInfo.connectionId, postData, toUserInfo.id);
+          await apiController.sendMessage(endpoint, toUserInfo.connectionId, results, toUser);
 
           break;
         }
-        case 'respondDoubt': {
-          results = await doubtsController.respondDoubt(PAYLOAD.RESPONDE_DOUBT);
-          break;
-        }
+
         case 'deleteConversation': {
           results = await conversationController.deleteConversation(PAYLOAD.DELETE_CONVERSATION);
+
+          await apiController.sendMessage(endpoint, connectionId, results, user);
+          let toUser = requestObj.to;
+          let toUserInfo = await connectionController.getConnectionByUser({ user: toUser });
+          console.log(toUserInfo);
+          await apiController.sendMessage(endpoint, toUserInfo.connectionId, results, toUser);
+
           break;
         }
+
+        case 'requestToCloseConversation': {
+          results = await chatController.requestToCloseConversation(PAYLOAD.REQUEST_TO_CLOSE_DOUBT);
+
+          // for teacher
+          await apiController.sendMessage(endpoint, connectionId, results.teacher, user);
+
+          // for student
+          await apiController.sendMessage(endpoint, connectionId, results.student, user);
+          break;
+        }
+
+
+
       }
 
     }
