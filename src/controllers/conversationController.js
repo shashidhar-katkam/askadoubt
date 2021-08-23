@@ -10,7 +10,7 @@ exports.saveConversation = async (payload) => {
     //    if (payload.)
 
 
-    return { messsage: [c], type: 'doubt', doubtId: doubt._id };
+    return { message: [c], type: 'doubt', doubtId: payload.for };
 }
 
 

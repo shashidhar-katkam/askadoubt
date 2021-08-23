@@ -3,9 +3,10 @@ const BOT_ID = "611f021feee24600094240b9";
 exports.CHAT_EVENTS = {
     selectSubject: 1,
     typeAChapter: 2,
-    rating: 3
-}
+    rating: 3,
+    askADoubt: 4,
 
+}
 exports.CHAT_MESSAGE_TYPE = {
     text: 1,
     typeAChapter: 2,
@@ -186,7 +187,7 @@ exports.PAYLOAD = {
                 content: 'Which alkane most readily undergoes question?',
                 from: this.CONSTANTS.BOT_ID,
                 to: this.CONSTANTS.USER_ID,
-                direction: 2,
+                direction: 1,
                 seen: false
             },
             {

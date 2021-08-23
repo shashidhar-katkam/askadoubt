@@ -21,7 +21,7 @@ exports.createDoubt = async (payload, user) => {
 
         nextMessage.for = doubt._id;
 
-        return { messsage: [nextMessage], type: 'doubt', doubtId: doubt._id };
+        return { message: [nextMessage], type: 'doubt', doubtId: doubt._id };
     } catch (e) {
         console.log(e);
     }
@@ -39,7 +39,7 @@ exports.respondDoubt = async (payload) => {
         let nextMessage = _.cloneDeep(CONSTANTS.connectedToATeacher);
         nextMessage.to = payload.user;
 
-        return { messsage: [nextMessage], type: 'doubt', doubtId: payload.doubtId };
+        return { message: [nextMessage], type: 'doubt', doubtId: payload.doubtId };
     } catch (e) {
         console.log(e);
     }

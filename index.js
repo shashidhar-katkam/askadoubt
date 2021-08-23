@@ -10,6 +10,7 @@ var doubtsController = require('./src/controllers/doubtsController');
 var conversationController = require('./src/controllers/conversationController');
 var connectionController = require('./src/controllers/connectionController');
 var chatController = require('./src/controllers/chatController');
+const { result } = require('lodash');
 //const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10', region: process.env.AWS_REGION });
 
 
@@ -57,7 +58,8 @@ exports.handler = async event => {
       let results;
       switch (routeKey) {
         case '$connect': {
-          results = await connectionController.saveConnection(PAYLOAD.SAVE_CONNECTION);
+          //  results = await connectionController.saveConnection(PAYLOAD.SAVE_CONNECTION);
+          //  await apiController.sendMessage(endpoint, connectionId, { helo: 'message' }, null);
           break;
         }
         case '$disconnect': {
@@ -67,8 +69,11 @@ exports.handler = async event => {
 
         // when socket opened, use will send the userId to update the connectionId in table
         case 'online': {
-          PAYLOAD.SAVE_CONNECTION.connectionId = connectionId;
-          results = await connectionController.saveConnection(PAYLOAD.SAVE_CONNECTION);
+          requestObj.connectionId = connectionId;
+          results = await connectionController.saveConnection(requestObj);
+
+          await apiController.sendMessage(endpoint, connectionId, { helo: 'message' }, requestObj.user);
+
           break;
         }
         // when socket closed, use will send the userId to update the connectionId in table
@@ -81,23 +86,40 @@ exports.handler = async event => {
         // to establish a socket connection.
         case 'createDoubt': {
           results = await doubtsController.createDoubt(requestObj, user);
+
+          console.log('hello-test-1')
+          console.log(results);
+          console.log('hello-test-2')
+          console.log(endpoint, connectionId, results, user);
+          console.log('hello-test-3')
           await apiController.sendMessage(endpoint, connectionId, results, user);
           break;
         }
 
         case 'respondDoubt': {
-          results = await doubtsController.respondDoubt(PAYLOAD.RESPONDE_DOUBT);
+          results = await doubtsController.respondDoubt(requestObj);
 
           await apiController.sendMessage(endpoint, connectionId, results, user);
-          await apiController.sendMessage(endpoint, connectionId, results, PAYLOAD.RESPONDE_DOUBT.user);
+
+
+
+          //   let toUser = requestObj.conversation.to;
+          let toUserInfo = await connectionController.getConnectionByUser({ user: requestObj.user });
+          console.log('toUserInfo');
+          console.log(toUserInfo);
+          console.log('toUserInfo');
+          await apiController.sendMessage(endpoint, toUserInfo.connectionId, results, requestObj.user);
           break;
         }
 
-        case 'saveConversation': {
-          results = await conversationController.saveConversation(PAYLOAD.CONVERSATION);
+        case 'sendMessage': {
+          let conversation = requestObj.conversation;
+          conversation.for = requestObj.doubtId;
+
+          results = await conversationController.saveConversation(conversation);
 
           await apiController.sendMessage(endpoint, connectionId, results, user);
-          let toUser = requestObj.to;
+          let toUser = requestObj.conversation.to;
           let toUserInfo = await connectionController.getConnectionByUser({ user: toUser });
           console.log(toUserInfo);
           await apiController.sendMessage(endpoint, toUserInfo.connectionId, results, toUser);
@@ -105,7 +127,7 @@ exports.handler = async event => {
           break;
         }
 
-        case 'deleteConversation': {
+        case 'deleteMessage': {
           results = await conversationController.deleteConversation(PAYLOAD.DELETE_CONVERSATION);
 
           await apiController.sendMessage(endpoint, connectionId, results, user);
@@ -117,7 +139,7 @@ exports.handler = async event => {
           break;
         }
 
-        case 'requestToCloseConversation': {
+        case 'requestToCloseDoubt': {
           results = await chatController.requestToCloseConversation(PAYLOAD.REQUEST_TO_CLOSE_DOUBT);
 
           // for teacher
@@ -136,6 +158,8 @@ exports.handler = async event => {
 
 
   } catch (e) {
+    console.log(e.message)
+    console.log(e.stack);
     return { statusCode: 500, body: e.stack };
   }
 

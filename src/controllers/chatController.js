@@ -58,8 +58,8 @@ exports.requestToCloseConversation = async (payload) => {
         closeRequestSend.from = payload.from;
 
         return {
-            student: { messsage: [CONSTANTS.areYouHappy, CONSTANTS.rating], type: 'doubt', doubtId: payload._id },
-            teacher: { messsage: [closeRequestSend], type: 'doubt', doubtId: payload._id },
+            student: { message: [CONSTANTS.areYouHappy, CONSTANTS.rating], type: 'doubt', doubtId: payload._id },
+            teacher: { message: [closeRequestSend], type: 'doubt', doubtId: payload._id },
         }
 
     } catch (ex) {
