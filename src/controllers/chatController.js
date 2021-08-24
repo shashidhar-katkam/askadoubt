@@ -49,17 +49,29 @@ exports.chatWithBOT = async (payload) => {
 
 }
 
-exports.requestToCloseConversation = async (payload) => {
+exports.requestToCloseConversation = async (payload, teacher) => {
     try {
-        await ConversationController.saveConversation(CONSTANTS.areYouHappy);
-        await ConversationController.saveConversation(CONSTANTS.rating);
+        let areYouHappy = _.cloneDeep(CONSTANTS.areYouHappy);
+        areYouHappy.for = payload.doubtId;
+        areYouHappy.to = payload.to;
 
+        await ConversationController.saveConversation(areYouHappy);
+
+        let areYouSatisfied = _.cloneDeep(CONSTANTS.areYouSatisfied);
+        areYouSatisfied.for = payload.doubtId;
+        areYouSatisfied.to = payload.to;
+
+        await ConversationController.saveConversation(areYouSatisfied);
+
+
+
+        // for teacher....
         let closeRequestSend = _.cloneDeep(CONSTANTS.closeRequestSend);
-        closeRequestSend.from = payload.from;
+        closeRequestSend.to = payload.teacher;
 
         return {
-            student: { message: [CONSTANTS.areYouHappy, CONSTANTS.rating], type: 'doubt', doubtId: payload._id },
-            teacher: { message: [closeRequestSend], type: 'doubt', doubtId: payload._id },
+            student: { message: [areYouHappy, areYouSatisfied], type: 'doubt', doubtId: payload.doubtId, handleSocketNext: true },
+            teacher: { message: [closeRequestSend], type: 'doubt', doubtId: payload.doubtId },
         }
 
     } catch (ex) {

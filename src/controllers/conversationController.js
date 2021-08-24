@@ -1,16 +1,97 @@
 const Doubt = require('./../models/doubtModel');
 const Conversation = require('./../models/conversationModel');
-
+const { CHAT_EVENTS, CONSTANTS } = require('./../util/constants')
 const _ = require('lodash');
 
-exports.saveConversation = async (payload) => {
-    let c = await Conversation.create(payload);
+exports.saveConversation = async (payload, reponseFor) => {
+
+    let conversations = [];
+
+    conversations.push(payload);
+
+    if (reponseFor == CHAT_EVENTS.areYouSatisfied) {
+        if (payload.content == 'Yes') {
+            let ratingText = _.cloneDeep(CONSTANTS.ratingText);
+            ratingText.for = payload.for;
+            ratingText.to = payload.from;
+
+            conversations.push(ratingText);
+
+            let rating = _.cloneDeep(CONSTANTS.rating);
+            rating.for = payload.for;
+            rating.to = payload.from;
+
+            conversations.push(rating);
+        } else {
+            let notSatisfiedReasonText = _.cloneDeep(CONSTANTS.notSatisfiedReasonText);
+            notSatisfiedReasonText.for = payload.for;
+            notSatisfiedReasonText.to = payload.from;
+
+            conversations.push(notSatisfiedReasonText);
+
+            let notSatisfiedReasons = _.cloneDeep(CONSTANTS.notSatisfiedReasons);
+            notSatisfiedReasons.for = payload.for;
+            notSatisfiedReasons.to = payload.from;
+
+            conversations.push(notSatisfiedReasons);
+
+        }
+    } else if (reponseFor == CHAT_EVENTS.rating) {
+        let thanksForRating = _.cloneDeep(CONSTANTS.thanksForRating);
+        thanksForRating.for = payload.for;
+        thanksForRating.to = payload.from;
+        conversations.push(thanksForRating);
+
+    } else if (reponseFor == CHAT_EVENTS.notSatisfiedReason) {
+        let connectaNewTeacherText = _.cloneDeep(CONSTANTS.connectaNewTeacherText);
+        connectaNewTeacherText.for = payload.for;
+        connectaNewTeacherText.to = payload.from;
+
+        conversations.push(connectaNewTeacherText);
+
+        let connectaNewTeacher = _.cloneDeep(CONSTANTS.connectaNewTeacher);
+        connectaNewTeacher.for = payload.for;
+        connectaNewTeacher.to = payload.from;
+
+        conversations.push(connectaNewTeacher);
 
 
-    //    if (payload.)
+
+    } else if (reponseFor == CHAT_EVENTS.connectaNewTeacher) {
+        if (payload.content == 'Yes') {
+            let waitForTeacher = _.cloneDeep(CONSTANTS.waitForTeacher);
+            waitForTeacher.for = payload.for;
+            waitForTeacher.to = payload.from;
+            conversations.push(waitForTeacher);
+
+            // need to add logic to move 
+            // update doubt to reassign to teacher..
+            await Doubt.findByIdAndUpdate(payload.for, {
+                assignedTo: false,
+                isSecondTeacher: true
+            });
 
 
-    return { message: [c], type: 'doubt', doubtId: payload.for };
+
+
+
+
+            
+        } else {
+            let waitForATeacher = _.cloneDeep(CONSTANTS.waitForATeacher);
+            waitForATeacher.for = payload.for;
+            waitForATeacher.to = payload.from;
+            conversations.push(waitForATeacher);
+        }
+    }
+
+    let savedConversations = [];
+    for (let cIndex = 0; cIndex < conversations.length; cIndex++) {
+        let conversation = await Conversation.create(payload);
+        savedConversations.push(conversation);
+    }
+
+    return { message: savedConversations, type: 'doubt', doubtId: payload.for, handleSocketNext: true, };
 }
 
 

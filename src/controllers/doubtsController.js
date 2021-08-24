@@ -21,29 +21,32 @@ exports.createDoubt = async (payload, user) => {
 
         nextMessage.for = doubt._id;
 
-        return { message: [nextMessage], type: 'doubt', doubtId: doubt._id };
+        return { message: [nextMessage], type: 'doubt', doubtId: doubt._id, handleSocketNext: true };
     } catch (e) {
         console.log(e);
     }
 }
 
-exports.respondDoubt = async (payload) => {
+exports.respondDoubt = async (payload, teacher) => {
     try {
         //let record = 
         await Doubt.findByIdAndUpdate(
             payload.doubtId,
-            { isAssigned: true, assignedTo: payload.teacherId },
+            { isAssigned: true, assignedTo: payload.teacherId, $push: { teacherIds: teacher } },
             //   { new: true }
         );
 
         let nextMessage = _.cloneDeep(CONSTANTS.connectedToATeacher);
         nextMessage.to = payload.user;
 
-        return { message: [nextMessage], type: 'doubt', doubtId: payload.doubtId };
+        return { message: [nextMessage], type: 'doubt', doubtId: payload.doubtId, handleSocketNext: true, teacherId: teacher };
     } catch (e) {
         console.log(e);
     }
 }
+
+
+
 
 // exports.respondDoubt = async (payload) => {
 //     try {

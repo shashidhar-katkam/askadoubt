@@ -5,6 +5,11 @@ exports.CHAT_EVENTS = {
     typeAChapter: 2,
     rating: 3,
     askADoubt: 4,
+    areYouSatisfied: 5,
+    closeChat: 6,
+    notSatisfiedReason: 7,
+    connectaNewTeacher: 8
+
 
 }
 exports.CHAT_MESSAGE_TYPE = {
@@ -38,9 +43,41 @@ exports.CONSTANTS = {
         seen: false
     },
     areYouHappy: {
-        type: 'alert',
+        type: 'text',
         content: 'Are you happy with teachers reply ?',
 
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    areYouSatisfied: {
+        type: 'list',
+        content: [
+            {
+                "value": "Yes",
+                "key": "Yes"
+            },
+            {
+                "value": "No",
+                "key": "No"
+            },
+            {
+                "value": "Maybe",
+                "key": "Maybe"
+            },
+        ],
+        currentRequest: this.CHAT_EVENTS.areYouSatisfied,
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+
+    ratingText: {
+        type: 'text',
+        content: 'On a scale of 1 to 5 how do you rate this session ?',
+        for: null,
         from: BOT_ID,
         to: null, //this.CONSTANTS.USER_ID,
         direction: 2,
@@ -79,6 +116,8 @@ exports.CONSTANTS = {
     thanksForRating: {
         type: 'text',
         content: 'Thanks for rating please get back to us for further doubts',
+        currentRequest: this.CHAT_EVENTS.closeChat,
+
         from: BOT_ID,
         to: null,
         direction: 2,
@@ -91,6 +130,68 @@ exports.CONSTANTS = {
         to: null,
         direction: 1,
         seen: false
+    },
+    notSatisfiedReasonText: {
+        type: 'text',
+        content: 'We would like to know reason for this',
+        for: null,
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    notSatisfiedReasons: {
+        type: 'list',
+        content: [
+            {
+                "value": "Not Satisfactory",
+                "key": "Not Satisfactory"
+            },
+            {
+                "value": "Want more Detailed answer",
+                "key": "Want more Detailed answer"
+            },
+            {
+                "value": "Lacking Communication",
+                "key": "Lacking Communication"
+            },
+            {
+                "value": "Delayed Response",
+                "key": "Delayed Response"
+            }
+        ],
+        currentRequest: this.CHAT_EVENTS.notSatisfiedReason,
+        from: BOT_ID,
+        to: null,
+        direction: 2,
+        seen: true
+    },
+    connectaNewTeacherText: {
+        type: 'text',
+        content: 'Do you want a different teacher to answer this question ?',
+        for: null,
+        from: BOT_ID,
+        to: null, //this.CONSTANTS.USER_ID,
+        direction: 2,
+        seen: false
+    },
+    connectaNewTeacher: {
+        type: 'list',
+        content: [
+            {
+                "value": "Yes",
+                "key": "Yes"
+            },
+            {
+                "value": "No",
+                "key": "No"
+            },
+        ],
+        currentRequest: this.CHAT_EVENTS.connectaNewTeacher,
+        from: BOT_ID,
+        to: null,
+        direction: 2,
+        seen: true
     },
 }
 
@@ -282,8 +383,9 @@ exports.PAYLOAD = {
     },
     REQUEST_TO_CLOSE_DOUBT: {
         doubtId: '611f44f589b3c3840843a4ba',
-        to: this.CONSTANTS.USER_ID,
-        from: this.CONSTANTS.TEACHER_ID
+        from: this.CONSTANTS.TEACHER_ID,
+        to: this.CONSTANTS.USER_ID
+
     },
 }
 

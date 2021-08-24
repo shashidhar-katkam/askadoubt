@@ -38,9 +38,15 @@ const doubtSchema = mongoose.Schema(
       type: String,
       //  required: [true, 'Please provide the connection ID'],
     },
-    teacherConnectionId: {
-      type: String,
-      //required: [false, 'Please provide the connection ID'],
+    teacherIds: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: 'User',
+        },
+
+      ],
+      default: []
     },
     isDoubtCleared: {
       type: Boolean,    // isFinished : true
@@ -64,6 +70,10 @@ const doubtSchema = mongoose.Schema(
     },
     reportedAt: {
       type: Date
+    },
+    isSecondTeacher: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

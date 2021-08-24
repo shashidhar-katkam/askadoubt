@@ -97,13 +97,14 @@ exports.handler = async event => {
         }
 
         case 'respondDoubt': {
-          results = await doubtsController.respondDoubt(requestObj);
+          results = await doubtsController.respondDoubt(requestObj, user);
 
           await apiController.sendMessage(endpoint, connectionId, results, user);
 
 
 
           //   let toUser = requestObj.conversation.to;
+          // send message to doubt created user.
           let toUserInfo = await connectionController.getConnectionByUser({ user: requestObj.user });
           console.log('toUserInfo');
           console.log(toUserInfo);
@@ -115,8 +116,9 @@ exports.handler = async event => {
         case 'sendMessage': {
           let conversation = requestObj.conversation;
           conversation.for = requestObj.doubtId;
+          let reponseFor = requestObj.reponseFor;
 
-          results = await conversationController.saveConversation(conversation);
+          results = await conversationController.saveConversation(conversation, reponseFor);
 
           await apiController.sendMessage(endpoint, connectionId, results, user);
           let toUser = requestObj.conversation.to;
@@ -140,7 +142,11 @@ exports.handler = async event => {
         }
 
         case 'requestToCloseDoubt': {
-          results = await chatController.requestToCloseConversation(PAYLOAD.REQUEST_TO_CLOSE_DOUBT);
+
+          let sample = PAYLOAD.REQUEST_TO_CLOSE_DOUBT;
+
+
+          results = await chatController.requestToCloseConversation(requestObj, user);
 
           // for teacher
           await apiController.sendMessage(endpoint, connectionId, results.teacher, user);
